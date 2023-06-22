@@ -1,14 +1,28 @@
+import configparser
 from google.cloud import bigquery
 from google.cloud.bigquery import SchemaField
 import datetime
 
-def add_incremental_delta_files(target_dataset_id, target_table_id, tracking_table_id, log_table_id, source_dataset_id, date_after):
-    client = bigquery.Client()
-    target_table_ref = client.dataset(target_dataset_id).table(target_table_id)
+def add_incremental_delta_files():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    source_project_id = config.get('DEFAULT', 'source_project_id')
+    target_project_id = config.get('DEFAULT', 'target_project_id')
+    target_dataset_id = config.get('DEFAULT', 'target_dataset_id')
+    target_table_id = config.get('DEFAULT', 'target_table_id')
+    tracking_table_id = config.get('DEFAULT', 'tracking_table_id')
+    log_table_id = config.get('DEFAULT', 'log_table_id')
+    source_dataset_id = config.get('DEFAULT', 'source_dataset_id')
+    date_after = config.get('DEFAULT', 'date_after')
+    table_prefix = config.get('DEFAULT', 'table_prefix')
+
+    client = bigquery.Client(project=source_project_id)
+    target_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(target_table_id)
     target_table = client.get_table(target_table_ref)
-    tracking_table_ref = client.dataset(target_dataset_id).table(tracking_table_id)
+    tracking_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(tracking_table_id)
     tracking_table = client.get_table(tracking_table_ref)
-    log_table_ref = client.dataset(target_dataset_id).table(log_table_id)
+    log_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(log_table_id)
     log_table = client.get_table(log_table_ref)
     date_after = datetime.datetime.strptime(date_after, '%Y-%m-%d %H:%M:%S')
     source_dataset_ref = client.dataset(source_dataset_id)
@@ -18,7 +32,7 @@ def add_incremental_delta_files(target_dataset_id, target_table_id, tracking_tab
         table
         for table in source_tables
         if (
-            table.table_id.startswith("source-09-20230308143021-0000000189")
+            table.table_id.startswith(table_prefix)
             and table.created > date_after
         )
     ]

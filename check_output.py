@@ -1,21 +1,18 @@
+import configparser
 from google.cloud import bigquery
 
 def check_output_in_new_table():
-    client = bigquery.Client()
+    config = configparser.ConfigParser()
+    config.read('config.ini')
 
-    query1 = """
+    target_project_id = config.get('DEFAULT', 'target_project_id')
+    dataset_id = config.get('DEFAULT', 'target_dataset_id')
+    table_id = config.get('DEFAULT', 'target_table_id')
+
+    client = bigquery.Client(project=target_project_id)
+    query1 = f"""
     SELECT COUNT(*) as row_count
-    FROM `dnbibmaba94079d5d54dcfb48d6eda.saas_cus_dnb_incr_ibm.test1`
-    """
-
-    query2 = """
-    SELECT COUNT(*) as total_row_count
-    FROM (
-        SELECT *,
-            ROW_NUMBER() OVER (PARTITION BY source_key ORDER BY source_creation_time DESC) AS row_num
-        FROM `dnbibmaba94079d5d54dcfb48d6eda.saas_cus_dnb_incr_ibm.test1`
-    ) t
-    WHERE row_num = 1
+    FROM `{target_project_id}.{dataset_id}.{table_id}`
     """
 
     query_job1 = client.query(query1)
