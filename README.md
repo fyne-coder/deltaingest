@@ -1,7 +1,3 @@
-# deltaingest
-
-# Write the README.md text to a file
-readme_text = """
 # Google BigQuery Incremental Updates
 
 This project is designed to manage incremental updates on Google BigQuery tables. It provides scripts for both the initial setup of a target table based on a source table, and for periodically updating the target table with incremental data from multiple source tables.
