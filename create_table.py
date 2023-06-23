@@ -5,10 +5,10 @@ def create_table_and_handle_duplicates():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    target_project_id = config.get('DEFAULT', 'target_project_id')
-    dataset_id = config.get('DEFAULT', 'target_dataset_id')
-    table_id = config.get('DEFAULT', 'target_table_id')
-    table_id_latest = config.get('DEFAULT', 'target_table_id_latest')
+    target_project_id = config.get('DEFAULT', 'target_project')
+    dataset_id = config.get('DEFAULT', 'target_dataset')
+    table_id = config.get('DEFAULT', 'target_table')
+    table_id_latest = config.get('DEFAULT', 'target_table_latest')
 
     client = bigquery.Client(project=target_project_id)
     query1 = f"""

@@ -6,10 +6,10 @@ def initialize_table_for_incremental():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    source_project_id = config.get('DEFAULT', 'source_project_id')
+    source_project_id = config.get('DEFAULT', 'source_project')
     source_dataset = config.get('DEFAULT', 'source_dataset')
     source_table = config.get('DEFAULT', 'source_table')
-    target_project_id = config.get('DEFAULT', 'target_project_id')
+    target_project_id = config.get('DEFAULT', 'target_project')
     target_dataset = config.get('DEFAULT', 'target_dataset')
     target_table = config.get('DEFAULT', 'target_table')
 
