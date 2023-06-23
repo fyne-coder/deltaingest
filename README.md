@@ -33,6 +33,7 @@ pip install google-cloud-bigquery configparser
 The configuration parameters for the scripts are stored in the `config.ini` file. Here's an example of what the configuration file might look like:
 
 [DEFAULT]
+
 source_project_id = your_project_id 
 
 source_dataset = your_source_dataset 
