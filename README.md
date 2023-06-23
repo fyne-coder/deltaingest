@@ -46,7 +46,7 @@ tracking_table_id = your_tracking_table_id \
 log_table_id = your_log_table_id \
 source_dataset_id = your_source_dataset_id \
 date_after = "2023-06-01 00:00:00" \
-table_prefix = "source-09-20230308143021-0000000189" \
+table_prefix = "source-09-20230308143021-0000000189" 
 
 ## Security
 
