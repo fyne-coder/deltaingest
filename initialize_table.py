@@ -2,9 +2,9 @@ import configparser
 from google.cloud import bigquery
 import google.cloud.exceptions
 
-def initialize_table_for_incremental():
+def initialize_table_for_incremental(config_path):
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(config_path)
 
     source_project_id = config.get('DEFAULT', 'source_project')
     source_dataset = config.get('DEFAULT', 'source_dataset')
