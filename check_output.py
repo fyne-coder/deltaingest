@@ -1,9 +1,9 @@
 import configparser
 from google.cloud import bigquery
 
-def check_output_in_new_table():
+def check_output_in_new_table(config_path):
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(config_path)
 
     target_project_id = config.get('DEFAULT', 'target_project')
     dataset_id = config.get('DEFAULT', 'target_dataset')

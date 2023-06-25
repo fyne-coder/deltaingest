@@ -12,6 +12,7 @@ def initialize_table_for_incremental(config_path):
     target_project_id = config.get('DEFAULT', 'target_project')
     target_dataset = config.get('DEFAULT', 'target_dataset')
     target_table = config.get('DEFAULT', 'target_table')
+    tracking_table = config.get('DEFAULT', 'tracking_table')
 
     client = bigquery.Client(project=source_project_id)
     table_ref = client.dataset(target_dataset, project=target_project_id).table(target_table)
@@ -73,3 +74,10 @@ def initialize_table_for_incremental(config_path):
         print('Row count matches in source and target tables.')
     else:
         print('Row count mismatch between source and target tables.')
+
+    # Truncate the tracking table
+    truncate_tracking_query = f"""
+        TRUNCATE TABLE `{target_project_id}.{target_dataset}.{tracking_table}`
+    """
+    client.query(truncate_tracking_query).result()
+
