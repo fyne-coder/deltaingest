@@ -6,9 +6,11 @@ from google.cloud.bigquery import SchemaField
 
 
 def add_incremental_delta_files(config_path):
+    # Parse the config file
     config = configparser.ConfigParser()
     config.read(config_path)
 
+    # Read the configuration details for the source and target tables
     source_project_id = config.get('DEFAULT', 'source_project')
     target_project_id = config.get('DEFAULT', 'target_project')
     target_dataset_id = config.get('DEFAULT', 'target_dataset')
@@ -19,18 +21,26 @@ def add_incremental_delta_files(config_path):
     date_after = config.get('DEFAULT', 'date_after')
     table_prefix = config.get('DEFAULT', 'table_prefix')
 
+    # Set timezone
     timezone = pytz.timezone('UTC')
 
+    # Create a BigQuery client
     client = bigquery.Client(project=source_project_id)
+
+    # Get the references to the target and tracking tables
     target_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(target_table_id)
     target_table = client.get_table(target_table_ref)
     tracking_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(tracking_table_id)
     tracking_table = client.get_table(tracking_table_ref)
     log_table_ref = client.dataset(target_dataset_id, project=target_project_id).table(log_table_id)
     log_table = client.get_table(log_table_ref)
+
+    # # Parse the date after which to consider updates
     date_after = date_after.strip('"')
     date_after = datetime.datetime.strptime(date_after, '%Y-%m-%d %H:%M:%S')
     date_after = date_after.replace(tzinfo=pytz.UTC)  # Use correct timezone
+   
+    # Get the list of tables in the source dataset
     source_dataset_ref = client.dataset(source_dataset_id)
     source_tables = list(client.list_tables(source_dataset_ref))
 
@@ -44,6 +54,8 @@ def add_incremental_delta_files(config_path):
     if row_count == 0:
         print("Tracking table is empty. Inserting all tables.")
         for table in source_tables:
+            # Check if the table matches the prefix and was created after the specified date
+            # If it does and it doesn't already exist in the tracking table, add it to the tracking table and process its rows
             print(f"Table created date: {table.created}")
             print(f"Date after: {date_after}")
 
@@ -82,6 +94,8 @@ def add_incremental_delta_files(config_path):
 
     else:
         # Code for when the tracking table is not empty
+        # If the tracking table is not empty, get the last table in it and start from the next one
+        # For each next table, if it exists, add it to the tracking table and process its rows
         query = f"SELECT table_id FROM `{target_project_id}.{target_dataset_id}.{tracking_table_id}` ORDER BY table_id DESC LIMIT 1"
         result = client.query(query).result()
         last_table_id = next(result)[0]
