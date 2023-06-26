@@ -1,7 +1,8 @@
 import configparser
+import job_logger
 from google.cloud import bigquery
 
-def check_output_in_new_table(config_path):
+def check_output_in_new_table(config_path, job_id):
     config = configparser.ConfigParser()
     config.read(config_path)
 
@@ -30,14 +31,18 @@ def check_output_in_new_table(config_path):
 
     for row in results1:
         original_row_count = row.row_count
-        print(f"Row count from `{table_id}` table: {original_row_count}")
+        #print(f"Row count from `{table_id}` table: {original_row_count}")
+        job_logger.log_message(job_id, 'check_output', f"Row count from `{table_id}` table: {original_row_count}")
 
     query_job2 = client.query(query2)
     results2 = query_job2.result()
 
     for row in results2:
         total_row_count = row.total_row_count
-        print(f"Total Row Count from Query: {total_row_count}")
+        #print(f"Total Row Count from Query: {total_row_count}")
+        job_logger.log_message(job_id, 'check_output', f"Total Row Count from Query: {total_row_count}")
 
     difference = original_row_count - total_row_count
-    print(f"Difference: {difference}")
+    #print(f"Difference: {difference}")
+    job_logger.log_message(job_id, 'check_output', f"Difference: {difference}")
+    

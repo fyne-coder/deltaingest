@@ -1,7 +1,8 @@
 import configparser
+import job_logger 
 from google.cloud import bigquery
 
-def create_table_and_handle_duplicates():
+def create_table_and_handle_duplicates(job_id):
     # Parse the config file
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -60,10 +61,12 @@ def create_table_and_handle_duplicates():
         # Execute the second query to create the new table
         query_job2 = client.query(query2)
         query_job2.result()
-        print(f"Table `{table_id_latest}` created successfully.")
+        #print(f"Table `{table_id_latest}` created successfully.")
+        job_logger.log_message(job_id, 'create_table', f"Table `{table_id_latest}` created successfully.")
     else:
         # If there are no rows, skip the creation of the new table
-        print(f"No rows found in the target table. Skipping creation of `{table_id_latest}` table.")
+        #print(f"No rows found in the target table. Skipping creation of `{table_id_latest}` table.")
+        job_logger.log_message(job_id, 'create_table', f"No rows found in the target table. Skipping creation of `{table_id_latest}` table.")
 
      # Execute the third query to get the number of duplicates in the new table
     query_job3 = client.query(query3)
@@ -72,4 +75,5 @@ def create_table_and_handle_duplicates():
     # Print the number of duplicates
     for row in results3:
         count_value = row[0]
-        print(f"Duplicate count in new table: {count_value}")
+        #print(f"Duplicate count in new table: {count_value}"
+        job_logger.log_message(job_id, 'create_table', f"Duplicate count in new table: {count_value}")
